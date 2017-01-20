@@ -14,6 +14,6 @@ public class Antenna : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		frequency = amplitude 
+        frequency = amplitude;
 	}
 }
