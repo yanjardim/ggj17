@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Antenna_middle : MonoBehaviour {
+    public bool starter;
+
     [Range(0f, 100f)]
 	public float frequency; //hz
     [Range(1f,360f)]
@@ -42,7 +44,7 @@ public class Antenna_middle : MonoBehaviour {
 	}
 
 	void FixedUpdate() {
-		if (recebeuOnda) {
+		if (recebeuOnda || starter) {
 
 
 			Vector3 fwd = transform.TransformDirection(Vector3.right * anguloResposta);

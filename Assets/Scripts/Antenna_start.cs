@@ -21,9 +21,9 @@ public class Antenna_start : MonoBehaviour {
 
 	void FixedUpdate() {
 		//if (startAngle < 360) {
-		gameObject.transform.Rotate ( Vector3.up * startAngle);
+		//gameObject.transform.Rotate (new Vector3(0, 1, 0));
 
-		startAngle += 1;
+		//startAngle += 1;
 
 		//Vector3 direction = new Vector3 ((int)transform.position.x*1*Time.deltaTime, (int)transform.position.y,(int) transform.position.z);
 			//Vector3 fwd = transform.TransformDirection(direction);
