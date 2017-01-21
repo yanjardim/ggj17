@@ -13,6 +13,12 @@ public class ObjectHelper : EditorWindow {
 
     public GameObject obj;
     public Transform parent;
+    private Color oldColor;
+    private Material material;
+
+    private float rotX, rotY, rotZ;
+
+    private Tile lastTile;
 
     public void OnEnable()
     {
@@ -20,6 +26,9 @@ public class ObjectHelper : EditorWindow {
         hoveredTile = null;
         selectedTile = null;
         select = false;
+        //if (oldColor != null)
+        oldColor = material.color;
+            
     }
 
     [MenuItem("Tools/Object Helper")]
@@ -36,7 +45,7 @@ public class ObjectHelper : EditorWindow {
 
         // Do your drawing here using Handles.
         Handles.BeginGUI();
-        Debug.Log("ASD");
+
         if (select)
         {
             
@@ -48,13 +57,14 @@ public class ObjectHelper : EditorWindow {
             ray = HandleUtility.GUIPointToWorldRay(e.mousePosition);
 
             if (Physics.Raycast(ray, out hit, Mathf.Infinity, mask))
-            { // aqui quando colide
+            { // aqui quando colide       
+                
                 if (e.type == EventType.MouseDown && e.button == 0)
                 { //se foi clicado
                     if (selectedTile != null)
                     { //se já tem um selectedTile anterior
                         var tempMaterial1 = new Material(selectedTile.GetComponent<Renderer>().sharedMaterial);
-                        tempMaterial1.color = Color.white;
+                        tempMaterial1.color = oldColor;
                         selectedTile.GetComponent<Renderer>().sharedMaterial = tempMaterial1;
 
                         //selectedTile.GetComponent<Renderer>().material.color = (Color.white); //muda a cor do antigo para branco
@@ -69,14 +79,21 @@ public class ObjectHelper : EditorWindow {
                     //hit.collider.gameObject.GetComponent<Renderer>().material.color = (Color.red); //mudo a cor do atual para vermelho
                     selectedTile = hit.collider.gameObject.GetComponent<Tile>(); //seta o novo selectedTile
 
-                    if (obj != null)
+                    if (obj != null && hit.collider.GetComponent<Tile>().obj == null)
                     {
                         Vector3 pos = selectedTile.gameObject.transform.position;
 
                         GameObject aux = Instantiate(obj, 
-                            new Vector3(pos.x, pos.y + obj.transform.localScale.y/2, pos.z), 
+                            new Vector3(pos.x, pos.y, pos.z), 
                             obj.transform.rotation) as GameObject;
+
+                        aux.transform.rotation = Quaternion.Euler(rotX, rotY, rotZ);
+
+                        /*aux.transform.position = new Vector3(aux.transform.position.x,
+                            aux.transform.position.y + obj.GetComponent<Renderer>().bounds.max.y, 
+                            aux.transform.position.z);*/
                         selectedTile.obj = aux;
+                        lastTile = hit.collider.GetComponent<Tile>();
                         if(parent != null)
                         {
                             aux.transform.SetParent(parent);
@@ -87,7 +104,7 @@ public class ObjectHelper : EditorWindow {
                 { //se não houve clique
 
                     var tempMaterial3 = new Material(hoveredTile.GetComponent<Renderer>().sharedMaterial);
-                    tempMaterial3.color = Color.white;
+                    tempMaterial3.color = oldColor;
                     hoveredTile.GetComponent<Renderer>().sharedMaterial = tempMaterial3;
 
                     //hoveredTile.GetComponent<Renderer>().material.color = (Color.white);
@@ -109,7 +126,7 @@ public class ObjectHelper : EditorWindow {
             else if (hoveredTile != null && hoveredTile != selectedTile)
             {
                 var tempMaterial5 = new Material(hoveredTile.GetComponent<Renderer>().sharedMaterial);
-                tempMaterial5.color = Color.white;
+                tempMaterial5.color = oldColor;
                 hoveredTile.GetComponent<Renderer>().sharedMaterial = tempMaterial5;
 
                 //hoveredTile.GetComponent<Renderer>().material.color = (Color.white);
@@ -137,7 +154,7 @@ public class ObjectHelper : EditorWindow {
         else if (selectedTile != null)
         {
             var tempMaterial6 = new Material(selectedTile.GetComponent<Renderer>().sharedMaterial);
-            tempMaterial6.color = Color.white;
+            tempMaterial6.color = oldColor;
             selectedTile.GetComponent<Renderer>().sharedMaterial = tempMaterial6;
 
             selectedTile = null;
@@ -167,13 +184,13 @@ public class ObjectHelper : EditorWindow {
             GUI.color = Color.red;
             text = "Helper OFF!";
         }
-
-        if (GUILayout.Button(text))
+        
+        if (GUILayout.Button(text, GUILayout.Height(80)))
         {
             if (select) select = false;
             else select = true;
         }
-        GUILayout.Space(50);
+        GUILayout.Space(25);
 
         GUI.color = Color.white;
 
@@ -191,7 +208,59 @@ public class ObjectHelper : EditorWindow {
         EditorGUILayout.EndHorizontal();
         #endregion
 
+
+        #region Material
+        EditorGUILayout.BeginHorizontal();
+        EditorGUILayout.LabelField("Material", GUILayout.Width(70));
+        material = (Material)EditorGUILayout.ObjectField(material, typeof(Material), true);
+        EditorGUILayout.EndHorizontal();
+        #endregion
+
+        EditorGUILayout.ColorField(oldColor);
+
+        GUILayout.Space(25);
+
+        #region Rotation X
+        EditorGUILayout.BeginHorizontal();
+
+        EditorGUILayout.LabelField("X Rotation", GUILayout.Width(80));
+        rotX = EditorGUILayout.FloatField(rotX);
+
+        EditorGUILayout.EndHorizontal();
+        #endregion
+
+        #region Rotation Y
+        EditorGUILayout.BeginHorizontal();
+
+        EditorGUILayout.LabelField("Y Rotation", GUILayout.Width(80));
+        rotY = EditorGUILayout.FloatField(rotY);
+
+        EditorGUILayout.EndHorizontal();
+        #endregion
+
+
+        #region Rotation Z
+        EditorGUILayout.BeginHorizontal();
+
+        EditorGUILayout.LabelField("Z Rotation", GUILayout.Width(80));
+        rotZ = EditorGUILayout.FloatField(rotZ);
+
+        EditorGUILayout.EndHorizontal();
+        #endregion
+
+        if(lastTile != null)
+        {
+            GUI.color = Color.yellow;
+            if (GUILayout.Button("Undo", GUILayout.Height(40)))
+            {
+                DestroyImmediate(lastTile.obj);
+                lastTile.obj = null;
+                lastTile = null;
+            }
+        }
+
     }
+
 
 
     void OnFocus()

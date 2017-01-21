@@ -81,7 +81,7 @@ public class Antenna : MonoBehaviour {
             transform.rotation = Quaternion.Euler(0, angle, 0);
 
 
-            power = gap <= 44 ? 10 : 10 - (gap / 45);
+            //power = gap <= 44 ? 10 : 10 - (gap / 45);
 
         }
         else if (currentAntenna != null && !currentAntenna.start)
@@ -91,7 +91,7 @@ public class Antenna : MonoBehaviour {
         }
 
         gap = Mathf.Clamp(gap, 1, 360);
-      //  power = Mathf.Clamp(power, 1, 10);
+        //power = Mathf.Clamp(power, 1, 10);
         RayManager();
 
     }

@@ -11,6 +11,8 @@ public class GridEditorWindow : EditorWindow {
     private Transform parent;
     private GameObject gridPrefab;
 
+    
+
     private GUIStyle style;
 
     [MenuItem("Tools/Grid Editor")]
@@ -20,7 +22,7 @@ public class GridEditorWindow : EditorWindow {
         GridEditorWindow window = (GridEditorWindow)EditorWindow.GetWindow(typeof(GridEditorWindow));
         window.Show();
     }
-
+   
 
     public void OnGUI()
     {
@@ -102,6 +104,12 @@ public class GridEditorWindow : EditorWindow {
             ClearTiles();
         }
 
+        GUILayout.Space(5);
+        if (GUILayout.Button("Clear Objects"))
+        {
+            ClearObjects();
+        }
+
 
     }
 
@@ -148,15 +156,21 @@ public class GridEditorWindow : EditorWindow {
         tileList.Clear();
     }
 
-    
+    public void ClearObjects()
+    {
+        foreach (GameObject a in GameObject.FindGameObjectsWithTag("Objects"))
+        {
+            DestroyImmediate(a);
+        }
+        
+    }
+
 
     private void OnEnable()
     {
         tileList = new List<Tile>();
         style = new GUIStyle();
         style.fontSize = 20;
+        
     }
-
-    
-
 }
