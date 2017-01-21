@@ -11,13 +11,7 @@ public class Tilemap : MonoBehaviour {
 	void Start () {
         tileList = new List<Tile>();
         SpawnTileMap();
-        Camera.main.transform.position = tileList[tileList.Count-1].gameObject.transform.position;
-        Vector3 vect = Camera.main.transform.position;
-        vect.y = 7;
-        vect.x += xTiles * 0.75f;
-        vect.z += zTiles * 0.75f;
-        Camera.main.transform.position = vect;
-        Camera.main.transform.LookAt(tileList[0].gameObject.transform);
+        FixCameraPosition();
 
     }
 	
@@ -35,6 +29,16 @@ public class Tilemap : MonoBehaviour {
             }
         }
 
+    }
+
+    public void FixCameraPosition() {
+        Camera.main.transform.position = tileList[tileList.Count - 1].gameObject.transform.position;
+        Vector3 vect = Camera.main.transform.position;
+        vect.y = 7;
+        vect.x += xTiles * 0.75f;
+        vect.z += zTiles * 0.75f;
+        Camera.main.transform.position = vect;
+        Camera.main.transform.LookAt(tileList[0].gameObject.transform);
     }
 	// Update is called once per frame
 	void Update () {
