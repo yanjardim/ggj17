@@ -17,71 +17,61 @@ public class Antenna : MonoBehaviour {
     public LayerMask mask;
 
     private Antenna currentAntenna;
+    private List<GameObject> visibleObjs= new List<GameObject>();
+
+    Quaternion startingAngle = Quaternion.AngleAxis(0, Vector3.up);
+    Quaternion stepAngle = Quaternion.AngleAxis(5, Vector3.up);
+
+     void DetectThings()
+    {
+        RaycastHit hit;
+        var angle = transform.rotation * Quaternion.AngleAxis(rayCount, Vector3.up);
+        var direction = angle * Vector3.forward;
+        var pos = transform.position;
+        for (var i = 0; i < rayCount; i++)
+        {
+            Debug.DrawRay(pos, direction * power , Color.red);
+            if (Physics.Raycast(pos, direction, out hit, 500))
+            {
+                var otherAntenna = hit.collider.GetComponent<Antenna>();
+                if (otherAntenna)
+                {
+                    visibleObjs.Add(otherAntenna.gameObject);
+                    otherAntenna.gap = 1;
+                    otherAntenna.power = 10;
+                    otherAntenna.active = true;
+
+                }
+            }
+            direction = stepAngle * direction;
+        }
+    }
+
 
     // Use this for initialization
     void Start () {
-       // dir = transform.forward * 1.5f ;
+        dir = transform.forward * 1.5f * power;
         Ray r = new Ray(transform.position, dir);
 
         rays.Add(r);
         mask = 1 << LayerMask.NameToLayer("Antenna") | LayerMask.NameToLayer("Glass");
     }
-	
-	// Update is called once per frame
-	void Update () {
+
+    // Update is called once per frame
+    void Update()
+    {
 
         if (active)
         {
             dir = transform.forward * 12.5f * power;
-            List<Ray> raysTemp = new List<Ray>();
-
-            for (int i = 0; i < rays.Count; ++i) 
-            {
-                Ray r = rays[i];
-                r.origin = transform.position;
-                //  raysTemp.Add(r);
-                  
-                Debug.DrawRay(r.origin, r.direction*power, Color.red);
-            }
-            rays.Clear();
-          //  Debug.DrawRay(transform.position, dir, Color.red);
 
 
+            RayManager();
+            DetectThings();
 
-            RaycastHit hit;
-            if (Physics.Raycast(transform.position, dir * 1000, out hit, mask))
-            {
-               
-                if (hit.collider.gameObject != null && hit.collider.gameObject.layer == LayerMask.NameToLayer("Antenna"))
-                {
-                    currentAntenna = hit.collider.GetComponent<Antenna>();
-                    currentAntenna.active = true;
-                }
-
-                if(hit.collider.gameObject.layer == LayerMask.NameToLayer("Glass"))
-                {
-                    Vector3 pos = transform.position;
-
-                    Vector3 dist = hit.point - transform.position;
-                    float total = power * 12.5f - dist.magnitude;
-
-
-                    Debug.DrawRay(hit.point, hit.normal * ((power) + total), Color.green);
-
-                    
-                }
-            }
-            else if(currentAntenna != null && !currentAntenna.start && hit.collider.gameObject.layer == LayerMask.NameToLayer("Antenna"))
-            {
-                currentAntenna.active = false;
-                currentAntenna = null;
-            }
-
-  
             transform.rotation = Quaternion.Euler(0, angle, 0);
 
-
-            //power = gap <= 44 ? 10 : 10 - (gap / 45);
+            power = gap <= 44 ? 10 : 10 - (gap / 45);
 
         }
         else if (currentAntenna != null && !currentAntenna.start)
@@ -91,10 +81,10 @@ public class Antenna : MonoBehaviour {
         }
 
         gap = Mathf.Clamp(gap, 1, 360);
-        //power = Mathf.Clamp(power, 1, 10);
-        RayManager();
+        power = Mathf.Clamp(power, 1, 10);
 
-    }
+        }
+ 
    
 
     public void RayManager()
@@ -104,25 +94,12 @@ public class Antenna : MonoBehaviour {
         if (gap % 5 != 0 && gap >= 1) {
             rayCount = (int) Mathf.Ceil(rayCount) + 1;
         }
-
-        while (rays.Count < rayCount)
-        { //se preciso de mais rays
-            Ray r = new Ray(transform.position, dir * 1000);
-            r.direction = Quaternion.AngleAxis(5 * Mathf.Ceil(rays.Count / 2), Vector3.up) * r.direction;
-            Ray r2 = new Ray(transform.position, dir * 1000);
-            r2.direction = Quaternion.AngleAxis(-5 * Mathf.Ceil(rays.Count / 2), Vector3.up) * r2.direction;
-            rays.Add(r);
-            rays.Add(r2);
-
-        }
-
-        while (rays.Count > rayCount && rays.Count >=3) //se preciso de menos rays
-        {
-            rays.RemoveAt(rays.Count-1);
-            rays.RemoveAt(rays.Count-1);
-        }
+        
+       
+    
 
     }
-
+    
    
+
 }
