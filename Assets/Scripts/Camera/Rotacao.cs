@@ -2,11 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Antenna : MonoBehaviour {
-    [Range(0f, 100f)]
-    public int frequency;
-    [Range(0f,100f)]
-    public int amplitude;
+public class Rotacao : MonoBehaviour {
+
 	// Use this for initialization
 	void Start () {
 		
@@ -14,6 +11,6 @@ public class Antenna : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        frequency = amplitude;
+		
 	}
 }
