@@ -11,6 +11,9 @@ public class ObjectHelper : EditorWindow {
     public Tile hoveredTile, selectedTile;
     public LayerMask mask;
 
+    public GameObject obj;
+    public Transform parent;
+
     public void OnEnable()
     {
         mask = 1 << LayerMask.NameToLayer("Grid");
@@ -36,6 +39,9 @@ public class ObjectHelper : EditorWindow {
         Debug.Log("ASD");
         if (select)
         {
+            
+            HandleUtility.AddDefaultControl(GUIUtility.GetControlID(FocusType.Passive));
+ 
             Event e = Event.current;
             Ray ray;
             RaycastHit hit;
@@ -43,7 +49,7 @@ public class ObjectHelper : EditorWindow {
 
             if (Physics.Raycast(ray, out hit, Mathf.Infinity, mask))
             { // aqui quando colide
-                if (e.type == EventType.MouseDown && e.button == 1)
+                if (e.type == EventType.MouseDown && e.button == 0)
                 { //se foi clicado
                     if (selectedTile != null)
                     { //se já tem um selectedTile anterior
@@ -58,8 +64,24 @@ public class ObjectHelper : EditorWindow {
                     tempMaterial2.color = Color.red;
                     hit.collider.gameObject.GetComponent<Renderer>().sharedMaterial = tempMaterial2;
 
+                    
+
                     //hit.collider.gameObject.GetComponent<Renderer>().material.color = (Color.red); //mudo a cor do atual para vermelho
                     selectedTile = hit.collider.gameObject.GetComponent<Tile>(); //seta o novo selectedTile
+
+                    if (obj != null)
+                    {
+                        Vector3 pos = selectedTile.gameObject.transform.position;
+
+                        GameObject aux = Instantiate(obj, 
+                            new Vector3(pos.x, pos.y + obj.transform.localScale.y/2, pos.z), 
+                            obj.transform.rotation) as GameObject;
+                        selectedTile.obj = aux;
+                        if(parent != null)
+                        {
+                            aux.transform.SetParent(parent);
+                        }
+                    }
                 }
                 else if (hoveredTile != selectedTile && hoveredTile != null && hit.collider.gameObject.GetComponent<Tile>() != hoveredTile)
                 { //se não houve clique
@@ -119,7 +141,11 @@ public class ObjectHelper : EditorWindow {
             selectedTile.GetComponent<Renderer>().sharedMaterial = tempMaterial6;
 
             selectedTile = null;
+
+
+       
         }
+
 
 
         
@@ -149,8 +175,22 @@ public class ObjectHelper : EditorWindow {
         }
         GUILayout.Space(50);
 
+        GUI.color = Color.white;
 
-        
+        #region Object
+        EditorGUILayout.BeginHorizontal();
+        EditorGUILayout.LabelField("Object", GUILayout.Width(70));
+        obj = (GameObject)EditorGUILayout.ObjectField(obj, typeof(GameObject), true);
+        EditorGUILayout.EndHorizontal();
+        #endregion
+
+        #region Parent
+        EditorGUILayout.BeginHorizontal();
+        EditorGUILayout.LabelField("Parent", GUILayout.Width(70));
+        parent = (Transform)EditorGUILayout.ObjectField(parent, typeof(Transform), true);
+        EditorGUILayout.EndHorizontal();
+        #endregion
+
     }
 
 
