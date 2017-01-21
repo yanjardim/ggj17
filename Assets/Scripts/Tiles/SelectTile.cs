@@ -6,6 +6,7 @@ public class SelectTile : MonoBehaviour
 {
     public Tile hoveredTile, selectedTile;
     public LayerMask mask;
+    public Color oldColor;
     // Use this for initialization
     void Start()
     {
@@ -22,16 +23,17 @@ public class SelectTile : MonoBehaviour
         ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
         if (Physics.Raycast(ray, out hit, Mathf.Infinity, mask)) { // aqui quando colide
+            oldColor = hit.collider.GetComponent<Renderer>().material.color;
             if (Input.GetMouseButtonDown(0)) { //se foi clicado
                 if (selectedTile != null) { //se já tem um selectedTile anterior
-                    selectedTile.GetComponent<Renderer>().material.color = (Color.white); //muda a cor do antigo para branco
+                    selectedTile.GetComponent<Renderer>().material.color = oldColor; //muda a cor do antigo para branco
                 }
                 hit.collider.gameObject.GetComponent<Renderer>().material.color = (Color.red); //mudo a cor do atual para vermelho
                 selectedTile = hit.collider.gameObject.GetComponent<Tile>(); //seta o novo selectedTile
             }
             else if (hoveredTile != selectedTile && hoveredTile != null && hit.collider.gameObject.GetComponent<Tile>() != hoveredTile ) { //se não houve clique
      
-                hoveredTile.GetComponent<Renderer>().material.color = (Color.white); 
+                hoveredTile.GetComponent<Renderer>().material.color = oldColor; 
             }
             if(hit.collider.gameObject.GetComponent<Tile>() != selectedTile ) { 
             hit.collider.gameObject.GetComponent<Renderer>().material.color = (Color.cyan);
@@ -42,7 +44,7 @@ public class SelectTile : MonoBehaviour
 
         }
         else if (hoveredTile != null && hoveredTile != selectedTile){
-            hoveredTile.GetComponent<Renderer>().material.color = (Color.white);
+            hoveredTile.GetComponent<Renderer>().material.color = oldColor;
         }
 
 

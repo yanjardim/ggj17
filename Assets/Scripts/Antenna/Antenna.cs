@@ -49,10 +49,10 @@ public class Antenna : MonoBehaviour {
 
 
             RaycastHit hit;
-            if (Physics.Raycast(transform.position, dir * 1000, out hit, mask))
+            if (Physics.Raycast(transform.position, dir * power * 12.5f, out hit, mask))
             {
                
-                if (hit.collider.gameObject != null && hit.collider.gameObject.layer == LayerMask.NameToLayer("Antenna"))
+                if (hit.collider.gameObject != null && hit.collider.gameObject.tag.Equals("Antenna"))
                 {
                     currentAntenna = hit.collider.GetComponent<Antenna>();
                     currentAntenna.active = true;
@@ -71,7 +71,7 @@ public class Antenna : MonoBehaviour {
                     
                 }
             }
-            else if(currentAntenna != null && !currentAntenna.start && hit.collider.gameObject.layer == LayerMask.NameToLayer("Antenna"))
+            else if(currentAntenna != null) //&& !currentAntenna.start && hit.collider.gameObject.layer == LayerMask.NameToLayer("Antenna"))
             {
                 currentAntenna.active = false;
                 currentAntenna = null;
