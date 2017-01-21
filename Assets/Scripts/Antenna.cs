@@ -7,9 +7,10 @@ public class Antenna : MonoBehaviour {
     public bool active;
 
     public float angle;
-    public int power, gap;
-     
-    
+    public int power = 10;
+    public int gap = 1;
+
+    public float rayCount = 1;
     public List<Ray> rays = new List<Ray>();
     public Vector3 dir;
 
@@ -17,15 +18,11 @@ public class Antenna : MonoBehaviour {
 
     private Antenna currentAntenna;
 
-    private int currentAngle, lastAngle;
-
-    public float distance = 5.0f;
- public int theAngle = 45;
- public int segments = 10;
     // Use this for initialization
     void Start () {
-        dir = transform.forward * 1.5f * 1;
+       // dir = transform.forward * 1.5f ;
         Ray r = new Ray(transform.position, dir);
+
         rays.Add(r);
         mask = 1 << LayerMask.NameToLayer("Antenna") | LayerMask.NameToLayer("Glass");
     }
@@ -36,18 +33,23 @@ public class Antenna : MonoBehaviour {
         if (active)
         {
             dir = transform.forward * 12.5f * power;
+            List<Ray> raysTemp = new List<Ray>();
 
-            /*foreach(Ray r in rays)
+            for (int i = 0; i < rays.Count; ++i) 
             {
-
-            }*/
-
-            Debug.DrawRay(transform.position, dir, Color.red);
+                Ray r = rays[i];
+                r.origin = transform.position;
+                //  raysTemp.Add(r);
+                  
+                Debug.DrawRay(r.origin, r.direction*power, Color.red);
+            }
+            rays.Clear();
+          //  Debug.DrawRay(transform.position, dir, Color.red);
 
 
 
             RaycastHit hit;
-            if (Physics.Raycast(transform.position, dir, out hit, mask))
+            if (Physics.Raycast(transform.position, dir * 1000, out hit, mask))
             {
                
                 if (hit.collider.gameObject != null && hit.collider.gameObject.layer == LayerMask.NameToLayer("Antenna"))
@@ -75,13 +77,12 @@ public class Antenna : MonoBehaviour {
                 currentAntenna = null;
             }
 
-
-           
+  
             transform.rotation = Quaternion.Euler(0, angle, 0);
 
 
             power = gap <= 44 ? 10 : 10 - (gap / 45);
-            //RaycastSweep();
+
         }
         else if (currentAntenna != null && !currentAntenna.start)
         {
@@ -89,52 +90,39 @@ public class Antenna : MonoBehaviour {
             currentAntenna = null;
         }
 
-        gap = Mathf.Clamp(gap, 0, 360);
-        power = Mathf.Clamp(power, 1, 10);
-        //RayManager();
-        
+        gap = Mathf.Clamp(gap, 1, 360);
+      //  power = Mathf.Clamp(power, 1, 10);
+        RayManager();
 
     }
    
 
     public void RayManager()
     {
-        //rays.Clear();
-        int maxNumber = 10;
-        int raysCount = gap / maxNumber; 
 
-
-
-        
-
-    }
-
-    void RaycastSweep()
-    {
-        Vector3 startPos  = transform.position; // umm, start position !
-        Vector3 targetPos  = Vector3.zero; // variable for calculated end position
-
-        int startAngle = (int)(-theAngle * 0.5); // half the angle to the Left of the forward
-        int finishAngle = (int)(theAngle * 0.5); // half the angle to the Right of the forward
-
-        // the gap between each ray (increment)
-        int inc = (int)(theAngle / segments);
-
-        RaycastHit hit;
-
-        // step through and find each target point
-        for (int i = startAngle; i < finishAngle; i += inc ) // Angle from forward
-        {
-            targetPos = (Quaternion.Euler(0, i, 0) * transform.forward).normalized * distance;
-
-            // linecast between points
-            if (Physics.Linecast(startPos, targetPos, out hit))
-            {
-                Debug.Log("Hit " + hit.collider.gameObject.name);
-            }
-
-            // to show ray just for testing
-            Debug.DrawLine(startPos, targetPos, Color.green);
+        rayCount = gap / 5;
+        if (gap % 5 != 0 && gap >= 1) {
+            rayCount = (int) Mathf.Ceil(rayCount) + 1;
         }
+
+        while (rays.Count < rayCount)
+        { //se preciso de mais rays
+            Ray r = new Ray(transform.position, dir * 1000);
+            r.direction = Quaternion.AngleAxis(5 * Mathf.Ceil(rays.Count / 2), Vector3.up) * r.direction;
+            Ray r2 = new Ray(transform.position, dir * 1000);
+            r2.direction = Quaternion.AngleAxis(-5 * Mathf.Ceil(rays.Count / 2), Vector3.up) * r2.direction;
+            rays.Add(r);
+            rays.Add(r2);
+
+        }
+
+        while (rays.Count > rayCount && rays.Count >=3) //se preciso de menos rays
+        {
+            rays.RemoveAt(rays.Count-1);
+            rays.RemoveAt(rays.Count-1);
+        }
+
     }
+
+   
 }
