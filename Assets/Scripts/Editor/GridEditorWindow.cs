@@ -6,6 +6,7 @@ using UnityEditor;
 public class GridEditorWindow : EditorWindow {
 
     private int xTiles, zTiles;
+    private int xSize, zSize;
     private List<Tile> tileList;
     private Transform parent;
     private GameObject gridPrefab;
@@ -34,7 +35,7 @@ public class GridEditorWindow : EditorWindow {
 
         EditorGUILayout.BeginHorizontal();
 
-        EditorGUILayout.LabelField("X", GUILayout.Width(20));
+        EditorGUILayout.LabelField("X Amount", GUILayout.Width(70));
         xTiles = EditorGUILayout.IntField(xTiles);
 
 
@@ -42,8 +43,28 @@ public class GridEditorWindow : EditorWindow {
 
         EditorGUILayout.BeginHorizontal();
 
-        EditorGUILayout.LabelField("Z", GUILayout.Width(20));       
+        EditorGUILayout.LabelField("Z Amount", GUILayout.Width(70));       
         zTiles = EditorGUILayout.IntField(zTiles);
+
+        EditorGUILayout.EndHorizontal();
+        #endregion
+
+        GUILayout.Space(15);
+
+        #region XZ Size
+
+        EditorGUILayout.BeginHorizontal();
+
+        EditorGUILayout.LabelField("X Size", GUILayout.Width(60));
+        xSize = EditorGUILayout.IntField(xSize);
+
+
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.BeginHorizontal();
+
+        EditorGUILayout.LabelField("Z Size", GUILayout.Width(60));
+        zSize = EditorGUILayout.IntField(zSize);
 
         EditorGUILayout.EndHorizontal();
         #endregion
@@ -86,7 +107,9 @@ public class GridEditorWindow : EditorWindow {
 
     public void SpawnTile(Vector3 pos)
     {
+        
         GameObject cleiton = (GameObject)Instantiate(gridPrefab, pos, gridPrefab.transform.rotation);
+        cleiton.transform.localScale = new Vector3(xSize, zSize, 1);
         tileList.Add(cleiton.GetComponent<Tile>());
         cleiton.transform.SetParent(parent);
         cleiton.transform.name = "Tile(" + pos.x + "," + pos.z + ")";
@@ -94,11 +117,11 @@ public class GridEditorWindow : EditorWindow {
 
     public void SpawnTileMap()
     {
-        for (int i = 0; i < xTiles; ++i)
+        for (int i = 0; i < xTiles; i ++)
         {
-            for (int j = 0; j < zTiles; ++j)
+            for (int j = 0; j < zTiles; j ++)
             {
-                SpawnTile(new Vector3(i, 0, j));
+                SpawnTile(new Vector3(i * xSize, 0, j * zSize));
             }
         }
 
