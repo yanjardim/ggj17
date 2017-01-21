@@ -27,7 +27,7 @@ public class Antenna : MonoBehaviour {
         dir = transform.forward * 1.5f * 1;
         Ray r = new Ray(transform.position, dir);
         rays.Add(r);
-        mask = 1 << LayerMask.NameToLayer("Antenna");
+        mask = 1 << LayerMask.NameToLayer("Antenna") | LayerMask.NameToLayer("Glass");
     }
 	
 	// Update is called once per frame
@@ -35,7 +35,7 @@ public class Antenna : MonoBehaviour {
 
         if (active)
         {
-            dir = transform.forward * 1.5f * power;
+            dir = transform.forward * 12.5f * power;
 
             /*foreach(Ray r in rays)
             {
@@ -50,13 +50,26 @@ public class Antenna : MonoBehaviour {
             if (Physics.Raycast(transform.position, dir, out hit, mask))
             {
                
-                if (hit.collider.gameObject != null)
+                if (hit.collider.gameObject != null && hit.collider.gameObject.layer == LayerMask.NameToLayer("Antenna"))
                 {
                     currentAntenna = hit.collider.GetComponent<Antenna>();
                     currentAntenna.active = true;
                 }
+
+                if(hit.collider.gameObject.layer == LayerMask.NameToLayer("Glass"))
+                {
+                    Vector3 pos = transform.position;
+
+                    Vector3 dist = hit.point - transform.position;
+                    float total = power * 12.5f - dist.magnitude;
+
+
+                    Debug.DrawRay(hit.point, hit.normal * ((power) + total), Color.green);
+
+                    
+                }
             }
-            else if(currentAntenna != null && !currentAntenna.start)
+            else if(currentAntenna != null && !currentAntenna.start && hit.collider.gameObject.layer == LayerMask.NameToLayer("Antenna"))
             {
                 currentAntenna.active = false;
                 currentAntenna = null;
