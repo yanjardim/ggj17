@@ -14,11 +14,14 @@ public class Antenna : MonoBehaviour {
     public float rayCount = 1;
     public Vector3 dir;
 
+    public const float multiplier = 5;
+
     public LayerMask mask;
 
     private List<Antenna> oldVisibleObjs = new List<Antenna>();
     private List<Antenna> visibleObjs= new List<Antenna>();
 
+    private BoxCollider box;
 
     Quaternion startingAngle = Quaternion.AngleAxis(0, Vector3.up);
     Quaternion stepAngle = Quaternion.AngleAxis(-5, Vector3.up);
@@ -28,7 +31,7 @@ void DetectThings()
         RaycastHit hit; //variavel que recebe um objeto
         var angle = transform.rotation * Quaternion.AngleAxis(0, Vector3.up);
         var direction = angle * Vector3.forward;
-        var pos = transform.position;
+        var pos = transform.TransformPoint(box.center);
         //CERTO
         int  entradas= 0;
         foreach (Antenna g in visibleObjs)
@@ -45,8 +48,8 @@ void DetectThings()
             visibleObjs.Clear();
         for (var i = 0; i < rayCount; i++) //faz os ray casts
         {
-            Debug.DrawRay(pos, direction * power , Color.red); //desenha raios
-            if (Physics.Raycast(pos, direction, out hit, power)) //faz raycast
+            Debug.DrawRay(pos, direction * multiplier * power , Color.red); //desenha raios
+            if (Physics.Raycast(pos, direction, out hit, power * multiplier)) //faz raycast
             {
                 var otherAntenna = hit.collider.GetComponent<Antenna>();    //verifica se uma antena foi atingida
 
@@ -132,8 +135,10 @@ void DetectThings()
     // Use this for initialization
     void Start () {
         lifeTime = 3.6f;
-        dir = transform.forward * 1.5f * power;
-        Ray r = new Ray(transform.position, dir);
+        dir = transform.forward * multiplier * power;
+        box = GetComponent<BoxCollider>();
+        
+        Ray r = new Ray(transform.TransformPoint(box.center), dir);
   
     tpc = transform.GetChild(0).GetComponent<ParticleSystem>();
         if(!active)
@@ -150,7 +155,7 @@ void DetectThings()
 
         if (active) //se torre está ativa
         {
-            dir = transform.forward * 12.5f * power; 
+            dir = transform.forward * multiplier * power; 
             RayManager();
             DetectThings();
             itensVisible = visibleObjs.Count;   // adquire o número de objetos vistos
@@ -206,7 +211,8 @@ void DetectThings()
             int numPartsAlive = tpc.GetParticles(parts);
             for (int i = 0; i < numPartsAlive; i++)
             {
-                parts[i].startLifetime =(float) 3.6 * power / 10;
+                parts[i].startLifetime =(float) 3.6 * power / multiplier;
+                
             }
             tpc.SetParticles(parts, numPartsAlive);
 
