@@ -4,9 +4,10 @@ using UnityEngine;
 
 public class GameCamera : MonoBehaviour {
     private const int limit = 10;
-    public int speed;
+    public int speed, rotateSpeed;
     public float limitZoom;
     public float zoomOut;
+
 	// Use this for initialization
 	void Start () {
         zoomOut = limitZoom;
@@ -44,6 +45,9 @@ public class GameCamera : MonoBehaviour {
             zoomOut--;
         }
 
+        
+
+
         zoomOut = Mathf.Clamp(zoomOut, 0, limitZoom);
 
         Bounds b = GameObject.Find("Chão").transform.GetChild(0).GetComponent<Renderer>().bounds ;
@@ -56,5 +60,7 @@ public class GameCamera : MonoBehaviour {
         aux.z = Mathf.Clamp(aux.z, vetz.x, vetz.y);
 
         Camera.main.transform.position = aux;
+
+
     }
 }

@@ -24,18 +24,18 @@ public class GameManager : MonoBehaviour {
     
     // Use this for initialization
     void Start () {
-		  gapField = GameObject.Find("Canvas").transform.FindChild("Values").FindChild("Gap").GetComponent<Slider>();
-          angleField = GameObject.Find("Canvas").transform.FindChild("Values").FindChild("Angle").GetComponent<Slider>();
+		  gapField = GameObject.Find("Canvas").transform.FindChild("SettingsPanel").FindChild("Gap").GetComponent<Slider>();
+          angleField = GameObject.Find("Canvas").transform.FindChild("SettingsPanel").FindChild("Angle").GetComponent<Slider>();
     }
 	
 	// Update is called once per frame
 	void Update () {
         if (selected)
         {
-            GameObject.Find("Canvas").transform.FindChild("Values").gameObject.SetActive(true);
+            GameObject.Find("Canvas").transform.FindChild("SettingsPanel").gameObject.SetActive(true);
 
         }
-        else GameObject.Find("Canvas").transform.FindChild("Values").gameObject.SetActive(false);
+        else GameObject.Find("Canvas").transform.FindChild("SettingsPanel").gameObject.SetActive(false);
     }
 
     private void LateUpdate()
@@ -78,4 +78,10 @@ public class GameManager : MonoBehaviour {
         rotateAntenna = false;
         selected = null;
     }
+
+    public void Replay()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
 }
