@@ -6,6 +6,7 @@ public class Antenna : MonoBehaviour {
     public bool start;
     public bool active;
 
+    private float lifeTime ;
     public float angle = 1;
     public int power = 10;
     public int gap = 1;
@@ -36,6 +37,8 @@ void DetectThings()
             {
                 g.active = false;
                 g.itensVisible = 0;
+                ParticleSystem otherSystem = g.transform.GetChild(0).GetComponent<ParticleSystem>();
+                otherSystem.enableEmission = false;
             }
            
         }
@@ -46,9 +49,10 @@ void DetectThings()
             if (Physics.Raycast(pos, direction, out hit, power)) //faz raycast
             {
                 var otherAntenna = hit.collider.GetComponent<Antenna>();    //verifica se uma antena foi atingida
+
                 if (otherAntenna)
                 {
-                    bool repeated = false;
+                     bool repeated = false;
                     foreach(Antenna g in visibleObjs) //verifica todos os objetos vistos nesse loop
                     {
                         if(g == otherAntenna) //se 2 ou mais raios batem na mesma antena
@@ -61,6 +65,8 @@ void DetectThings()
                     {
                         entradas ++;
                         otherAntenna.active = true; //ativa a antena e insere na lista de antenas atingidas
+                        ParticleSystem otherSystem = otherAntenna.transform.GetChild(0).GetComponent<ParticleSystem>();
+                        otherSystem.enableEmission = true;
                         visibleObjs.Add(otherAntenna);
                     }
 
@@ -97,6 +103,8 @@ void DetectThings()
                     if (!g.start)
                     {
                         g.active = false; //desativa a antena
+                        ParticleSystem otherSystem = g.transform.GetChild(0).GetComponent<ParticleSystem>();
+                        otherSystem.enableEmission = false;
                         g.itensVisible = 0;
                 }
                     
@@ -123,12 +131,16 @@ void DetectThings()
 
     // Use this for initialization
     void Start () {
-        
+        lifeTime = 3.6f;
         dir = transform.forward * 1.5f * power;
         Ray r = new Ray(transform.position, dir);
   
     tpc = transform.GetChild(0).GetComponent<ParticleSystem>();
+        if(!active)
+        {
+            tpc.enableEmission = false;
 
+        }
     mask = 1 << LayerMask.NameToLayer("Antenna") | LayerMask.NameToLayer("Glass");
     }
 
@@ -157,6 +169,9 @@ void DetectThings()
                 if (!a.start)
                 {
                     a.active = false;
+                    ParticleSystem otherSystem = a.transform.GetChild(0).GetComponent<ParticleSystem>();
+                    otherSystem.enableEmission = false;
+                    
                     a.itensVisible = 0;
                 }
 
@@ -169,6 +184,9 @@ void DetectThings()
                 if (!a.start)
                 {
                     a.active = false;
+                    ParticleSystem otherSystem = a.transform.GetChild(0).GetComponent<ParticleSystem>();
+                    otherSystem.enableEmission = false;
+ ;
                     a.itensVisible = 0;
                 }
                 a.oldVisibleObjs.Clear();
