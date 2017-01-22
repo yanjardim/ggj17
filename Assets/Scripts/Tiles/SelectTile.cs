@@ -23,7 +23,7 @@ public class SelectTile : MonoBehaviour
         ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
         if (Physics.Raycast(ray, out hit, Mathf.Infinity, mask)) { // aqui quando colide
-            oldColor = hit.collider.GetComponent<Renderer>().material.color;
+            
             if (Input.GetMouseButtonDown(0)) { //se foi clicado
                 if (selectedTile != null) { //se já tem um selectedTile anterior
                     selectedTile.GetComponent<Renderer>().material.color = oldColor; //muda a cor do antigo para branco

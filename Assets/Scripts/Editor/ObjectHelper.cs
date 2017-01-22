@@ -27,6 +27,7 @@ public class ObjectHelper : EditorWindow {
         selectedTile = null;
         select = false;
         //if (oldColor != null)
+        if(material != null)
         oldColor = material.color;
             
     }
