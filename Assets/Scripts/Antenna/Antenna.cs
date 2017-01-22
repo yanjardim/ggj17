@@ -20,12 +20,12 @@ public class Antenna : MonoBehaviour {
 
 
     Quaternion startingAngle = Quaternion.AngleAxis(0, Vector3.up);
-    Quaternion stepAngle = Quaternion.AngleAxis(5, Vector3.up);
-
-     void DetectThings()
+    Quaternion stepAngle = Quaternion.AngleAxis(-5, Vector3.up);
+    private ParticleSystem tpc;
+void DetectThings()
     {
         RaycastHit hit; //variavel que recebe um objeto
-        var angle = transform.rotation * Quaternion.AngleAxis(rayCount, Vector3.up);
+        var angle = transform.rotation * Quaternion.AngleAxis(0, Vector3.up);
         var direction = angle * Vector3.forward;
         var pos = transform.position;
         //CERTO
@@ -65,6 +65,12 @@ public class Antenna : MonoBehaviour {
                     }
 
                 }
+              /*  var wall = hit.collider.GetComponent<Wall>();
+                else if (wall)
+                {
+                    //MOSTRA QUE A ONDA NÃO IRÁ PASSAR A PAREDE
+                }
+                */
 
                 
             }
@@ -91,7 +97,7 @@ public class Antenna : MonoBehaviour {
                     if (!g.start)
                     {
                         g.active = false; //desativa a antena
-                         g.itensVisible = 0;
+                        g.itensVisible = 0;
                 }
                     
                     g.oldVisibleObjs.Clear();
@@ -117,28 +123,30 @@ public class Antenna : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
+        
         dir = transform.forward * 1.5f * power;
         Ray r = new Ray(transform.position, dir);
+  
+    tpc = transform.GetChild(0).GetComponent<ParticleSystem>();
 
- 
-        mask = 1 << LayerMask.NameToLayer("Antenna") | LayerMask.NameToLayer("Glass");
+    mask = 1 << LayerMask.NameToLayer("Antenna") | LayerMask.NameToLayer("Glass");
     }
 
     // Update is called once per frame
     void Update()
     {
 
-        if (active)
+        if (active) //se torre está ativa
         {
-            dir = transform.forward * 12.5f * power;
-
-
+            dir = transform.forward * 12.5f * power; 
             RayManager();
             DetectThings();
             itensVisible = visibleObjs.Count;   // adquire o número de objetos vistos
             transform.rotation = Quaternion.Euler(0, angle, 0);
 
             power = gap <= 44 ? 10 : 10 - (gap / 45);
+  
+
 
         }
 
@@ -170,7 +178,24 @@ public class Antenna : MonoBehaviour {
         }
 
         gap = Mathf.Clamp(gap, 1, 360);
-        power = Mathf.Clamp(power, 1, 10);
+        power = Mathf.Clamp(power, 3, 10);
+        if (!tpc.Equals(null))
+        {
+            ParticleSystem.ShapeModule sh = tpc.shape;
+            sh.arc = gap;
+            ParticleSystem.Particle[] parts;
+            parts = new ParticleSystem.Particle[tpc.maxParticles]; 
+            int numPartsAlive = tpc.GetParticles(parts);
+            for (int i = 0; i < numPartsAlive; i++)
+            {
+                parts[i].startLifetime =(float) 3.6 * power / 10;
+            }
+            tpc.SetParticles(parts, numPartsAlive);
+
+        }
+
+
+   
 
 
         }
