@@ -42,14 +42,23 @@ public class SelectTile : MonoBehaviour
                     
                     if (antennaMiddle != null)
                     {
-                        if (GameManager.instance.putAntenna && antennaMiddle != null && selectedTile != null && selectedTile.obj == null)
+                        if (GameManager.instance.putAntenna)
                         {
-                            GameObject aux = (GameObject)Instantiate(antennaMiddle, selectedTile.transform.position, antennaMiddle.transform.rotation);
-                            selectedTile.obj = aux;
-                            
-                            selectedTile.gameObject.GetComponent<Renderer>().material.color = oldColor;
-                            GameManager.instance.putAntenna = false;
-                            GameManager.instance.canSelect = false;
+                            if (antennaMiddle != null && selectedTile != null && selectedTile.obj == null)
+                            {
+                                GameObject aux = (GameObject)Instantiate(antennaMiddle, selectedTile.transform.position, antennaMiddle.transform.rotation);
+                                selectedTile.obj = aux;
+
+                                selectedTile.gameObject.GetComponent<Renderer>().material.color = oldColor;
+                                GameManager.instance.putAntenna = false;
+                                GameManager.instance.canSelect = false;
+                            }
+                            else if(antennaMiddle != null && selectedTile != null && selectedTile.obj != null && ((1 << selectedTile.obj.layer) & LayerMask.NameToLayer("Antenna")) == 0)
+                            {
+                                Destroy(selectedTile.obj);
+                                selectedTile.obj = null;
+                                GameManager.instance.Cancel();
+                            }
                         }
                         else if(selectedTile != null)
                         {
@@ -60,7 +69,7 @@ public class SelectTile : MonoBehaviour
 
                         if (GameManager.instance.rotateAntenna && selectedTile != null &&selectedTile.obj != null)
                         {
-                            if (((1 << selectedTile.obj.layer) & LayerMask.NameToLayer("Antenna")) == 0)
+                            if (((1 << selectedTile.obj.layer) & LayerMask.NameToLayer("Antenna")) == 0 && selectedTile.obj.transform.GetChild(0).GetComponent<Antenna>().active)
                             {
 
                                 GameManager.instance.selected = selectedTile;
