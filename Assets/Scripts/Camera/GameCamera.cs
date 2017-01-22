@@ -45,5 +45,16 @@ public class GameCamera : MonoBehaviour {
         }
 
         zoomOut = Mathf.Clamp(zoomOut, 0, limitZoom);
+
+        Bounds b = GameObject.Find("Chão").transform.GetChild(0).GetComponent<Renderer>().bounds ;
+        Vector2 vetx = new Vector2(b.min.x, b.max.x);
+      //  Vector2 vety = new Vector2(b.min.y, b.max.y);
+        Vector2 vetz = new Vector2(b.min.z, b.max.z);
+        Vector3 aux = Camera.main.transform.position;// = Mathf.Clamp(zoomOut, 0, limitZoom);
+        aux.x = Mathf.Clamp(aux.x,vetx.x,vetx.y);
+        aux.y = Mathf.Clamp(aux.y, 49, 200);
+        aux.z = Mathf.Clamp(aux.z, vetz.x, vetz.y);
+
+        Camera.main.transform.position = aux;
     }
 }

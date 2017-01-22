@@ -12,6 +12,7 @@ public class Antenna : MonoBehaviour {
     public int gap = 1;
     public int itensVisible = 0;
     public float rayCount = 1;
+    public bool debug = false;
     public Vector3 dir;
 
     public const float multiplier = 5;
@@ -48,7 +49,11 @@ void DetectThings()
             visibleObjs.Clear();
         for (var i = 0; i < rayCount; i++) //faz os ray casts
         {
-            Debug.DrawRay(pos, direction * multiplier * power , Color.red); //desenha raios
+            if (debug)
+            {
+                Debug.DrawRay(pos, direction * multiplier * power, Color.red); //desenha raios
+            }
+            
             if (Physics.Raycast(pos, direction, out hit, power * multiplier)) //faz raycast
             {
                 var otherAntenna = hit.collider.GetComponent<Antenna>();    //verifica se uma antena foi atingida
