@@ -78,4 +78,10 @@ public class GameManager : MonoBehaviour {
         rotateAntenna = false;
         selected = null;
     }
+
+    public void Replay()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
 }

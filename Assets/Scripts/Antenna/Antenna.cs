@@ -24,6 +24,8 @@ public class Antenna : MonoBehaviour {
 
     private BoxCollider box;
 
+    public bool canDelete, delete;
+
     Quaternion startingAngle = Quaternion.AngleAxis(0, Vector3.up);
     Quaternion stepAngle = Quaternion.AngleAxis(-5, Vector3.up);
     private ParticleSystem tpc;
@@ -34,9 +36,12 @@ void DetectThings()
         var direction = angle * Vector3.forward;
         var pos = transform.TransformPoint(box.center);
         //CERTO
+
+        
         int  entradas= 0;
         foreach (Antenna g in visibleObjs)
         {
+            
             if (!g.start)
             {
                 g.active = false;
@@ -46,6 +51,9 @@ void DetectThings()
             }
            
         }
+
+        
+
             visibleObjs.Clear();
         for (var i = 0; i < rayCount; i++) //faz os ray casts
         {
@@ -152,17 +160,21 @@ void DetectThings()
 
         }
     mask = 1 << LayerMask.NameToLayer("Antenna") | LayerMask.NameToLayer("Glass");
+
+        canDelete = true;
     }
 
     // Update is called once per frame
     void Update()
     {
 
-        if (active) //se torre está ativa
+        if (active && gameObject != null) //se torre está ativa
         {
-            dir = transform.forward * multiplier * power; 
+            dir = transform.forward * multiplier * power;
             RayManager();
+            canDelete = false;
             DetectThings();
+            canDelete = true;
             itensVisible = visibleObjs.Count;   // adquire o número de objetos vistos
             transform.rotation = Quaternion.Euler(0, angle, 0);
 
@@ -172,6 +184,7 @@ void DetectThings()
 
         }
 
+        
         else if (!start)
         {
             foreach (Antenna a in visibleObjs)
@@ -224,10 +237,14 @@ void DetectThings()
         }
 
 
-   
-
-
+        if (delete && canDelete)
+        {
+            Destroy(this.gameObject);
         }
+
+
+
+    }
 
     public void RayManager()
     {

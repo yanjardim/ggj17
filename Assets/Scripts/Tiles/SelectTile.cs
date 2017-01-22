@@ -55,7 +55,7 @@ public class SelectTile : MonoBehaviour
                             }
                             else if(antennaMiddle != null && selectedTile != null && selectedTile.obj != null && ((1 << selectedTile.obj.layer) & LayerMask.NameToLayer("Antenna")) == 0)
                             {
-                                Destroy(selectedTile.obj);
+                                selectedTile.obj.transform.GetChild(0).GetComponent<Antenna>().delete = true;
                                 selectedTile.obj = null;
                                 GameManager.instance.Cancel();
                             }
