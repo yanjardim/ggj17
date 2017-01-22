@@ -7,6 +7,8 @@ public class SelectTile : MonoBehaviour
     public Tile hoveredTile, selectedTile;
     public LayerMask mask;
     public Color oldColor;
+
+    public GameObject antennaMiddle;
     // Use this for initialization
     void Start()
     {
@@ -18,33 +20,79 @@ public class SelectTile : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        Ray ray;
-        RaycastHit hit;
-        ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        if (GameManager.instance.canSelect)
+        {
+            Ray ray;
+            RaycastHit hit;
+            ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
-        if (Physics.Raycast(ray, out hit, Mathf.Infinity, mask)) { // aqui quando colide
-            
-            if (Input.GetMouseButtonDown(0)) { //se foi clicado
-                if (selectedTile != null) { //se já tem um selectedTile anterior
-                    selectedTile.GetComponent<Renderer>().material.color = oldColor; //muda a cor do antigo para branco
+            if (Physics.Raycast(ray, out hit, Mathf.Infinity, mask))
+            { // aqui quando colide
+
+                if (Input.GetMouseButtonDown(0))
+                { //se foi clicado
+                    
+                    selectedTile = hit.collider.gameObject.GetComponent<Tile>(); //seta o novo selectedTile
+
+                    /*if (selectedTile.obj == null)
+                    {
+                        selectedTile.gameObject.GetComponent<Renderer>().material.color = oldColor;
+                        selectedTile = null;
+                    }*/
+                    
+                    if (antennaMiddle != null)
+                    {
+                        if (GameManager.instance.putAntenna && antennaMiddle != null && selectedTile != null && selectedTile.obj == null)
+                        {
+                            GameObject aux = (GameObject)Instantiate(antennaMiddle, selectedTile.transform.position, antennaMiddle.transform.rotation);
+                            selectedTile.obj = aux;
+                            
+                            selectedTile.gameObject.GetComponent<Renderer>().material.color = oldColor;
+                            GameManager.instance.putAntenna = false;
+                            GameManager.instance.canSelect = false;
+                        }
+                        else if(selectedTile != null)
+                        {
+                            selectedTile.gameObject.GetComponent<Renderer>().material.color = oldColor;
+                            GameManager.instance.putAntenna = false;
+                            GameManager.instance.canSelect = false;
+                        }
+
+                        if (GameManager.instance.rotateAntenna && selectedTile != null &&selectedTile.obj != null)
+                        {
+                            if (((1 << selectedTile.obj.layer) & LayerMask.NameToLayer("Antenna")) == 0)
+                            {
+
+                                GameManager.instance.selected = selectedTile;
+                                GameManager.instance.gapField.value = selectedTile.obj.transform.GetChild(0).GetComponent<Antenna>().gap;
+                                GameManager.instance.angleField.value = selectedTile.obj.transform.GetChild(0).GetComponent<Antenna>().angle;
+                                GameManager.instance.canSelect = false;
+
+
+                            }
+                        }
+                        
+                    }
+                                   
                 }
-                hit.collider.gameObject.GetComponent<Renderer>().material.color = (Color.red); //mudo a cor do atual para vermelho
-                selectedTile = hit.collider.gameObject.GetComponent<Tile>(); //seta o novo selectedTile
-            }
-            else if (hoveredTile != selectedTile && hoveredTile != null && hit.collider.gameObject.GetComponent<Tile>() != hoveredTile ) { //se não houve clique
-     
-                hoveredTile.GetComponent<Renderer>().material.color = oldColor; 
-            }
-            if(hit.collider.gameObject.GetComponent<Tile>() != selectedTile ) { 
-            hit.collider.gameObject.GetComponent<Renderer>().material.color = (Color.cyan);
-            hoveredTile = hit.collider.gameObject.GetComponent<Tile>(); //seta hovered
-            }
-            
+                else if (hoveredTile != selectedTile && hoveredTile != null && hit.collider.gameObject.GetComponent<Tile>() != hoveredTile)
+                { //se não houve clique
+
+                    hoveredTile.GetComponent<Renderer>().material.color = oldColor;
+                }
+                if (hit.collider.gameObject.GetComponent<Tile>() != selectedTile)
+                {
+                    hit.collider.gameObject.GetComponent<Renderer>().material.color = (Color.black);
+                    hoveredTile = hit.collider.gameObject.GetComponent<Tile>(); //seta hovered
+                }
 
 
-        }
-        else if (hoveredTile != null && hoveredTile != selectedTile){
-            hoveredTile.GetComponent<Renderer>().material.color = oldColor;
+
+            }
+            else if (hoveredTile != null && hoveredTile != selectedTile)
+            {
+                hoveredTile.GetComponent<Renderer>().material.color = oldColor;
+            }
         }
 
 
