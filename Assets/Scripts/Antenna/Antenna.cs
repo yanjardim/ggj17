@@ -35,6 +35,7 @@ public class Antenna : MonoBehaviour {
             if (!g.start)
             {
                 g.active = false;
+                g.itensVisible = 0;
             }
            
         }
@@ -90,7 +91,8 @@ public class Antenna : MonoBehaviour {
                     if (!g.start)
                     {
                         g.active = false; //desativa a antena
-                    }
+                         g.itensVisible = 0;
+                }
                     
                     g.oldVisibleObjs.Clear();
                     g.visibleObjs.Clear();
@@ -147,6 +149,7 @@ public class Antenna : MonoBehaviour {
                 if (!a.start)
                 {
                     a.active = false;
+                    a.itensVisible = 0;
                 }
 
                 a.oldVisibleObjs.Clear();
@@ -158,6 +161,7 @@ public class Antenna : MonoBehaviour {
                 if (!a.start)
                 {
                     a.active = false;
+                    a.itensVisible = 0;
                 }
                 a.oldVisibleObjs.Clear();
                 a.visibleObjs.Clear();
